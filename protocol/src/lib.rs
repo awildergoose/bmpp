@@ -1,3 +1,9 @@
+#![warn(clippy::pedantic)]
+#![warn(clippy::nursery)]
+#![warn(clippy::suspicious)]
+#![warn(clippy::perf)]
+#![warn(clippy::style)]
+
 pub mod stream;
 pub mod xml;
 

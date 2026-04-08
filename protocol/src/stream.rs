@@ -44,6 +44,12 @@ impl Stream {
         self.pipe += &command.build();
         println!("yum {command:?} => {}", command.build());
     }
+
+    pub fn consume(&mut self) -> String {
+        let pipe = self.pipe.clone();
+        self.pipe = String::new();
+        pipe
+    }
 }
 
 impl Default for Stream {
