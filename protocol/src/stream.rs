@@ -1,4 +1,7 @@
-use crate::{xml::sanitize_text, xml_args};
+use crate::{
+    xml::{build_xml, sanitize_text},
+    xml_args,
+};
 
 #[derive(Debug, Clone)]
 pub enum StreamCommand {
@@ -19,11 +22,14 @@ impl StreamCommand {
     #[must_use]
     pub fn build(&self) -> String {
         match self {
-            Self::XmlVersion { version } => format!("<?xml version='{}'?>", sanitize_text(version)),
-            Self::Open { from, to, version } => xml_args!("stream:stream", from, to, version)
-                .with_field("xmlns", "jabber:client")
-                .with_field("xmlns:stream", "http://etherx.jabber.org/streams")
-                .build(),
+            Self::XmlVersion { version } => {
+                format!("<?xml version=\"{}\"?>", sanitize_text(version))
+            }
+            Self::Open { from, to, version } => build_xml(
+                xml_args!("stream:stream", from, to, version)
+                    .attr("xmlns", "jabber:client")
+                    .attr("xmlns:stream", "http://etherx.jabber.org/streams"),
+            ),
             Self::Unknown { text } => text.clone(),
         }
     }

@@ -1,36 +1,36 @@
+use xml::{writer::events::StartElementBuilder, EmitterConfig};
+
 #[must_use]
 pub fn sanitize_text(text: &str) -> String {
     // TODO: definitely missing a lot here
-    text.replace('\'', "\\'")
+    text.replace('"', "\\\"")
 }
 
-pub enum XmlComponent {
-    Pair { key: String, value: String },
-}
-
-impl XmlComponent {
-    #[must_use]
-    pub fn build(&self) -> String {
-        match self {
-            Self::Pair { key, value } => {
-                let value = sanitize_text(value);
-                format!("{key}='{value}'")
-            }
-        }
+/// Converts a [`StartElementBuilder`] from [`xml`] to a [`String`]
+///
+/// # Panics
+///
+/// Panics if the writer fails or if the final [`String`] is non UTF-8
+#[must_use]
+pub fn build_xml(element: StartElementBuilder) -> String {
+    let mut sink = Vec::new();
+    {
+        let mut writer = EmitterConfig::new()
+            .write_document_declaration(false)
+            .create_writer(&mut sink);
+        writer
+            .write(element)
+            .expect("writer failed to write element");
     }
-}
-
-pub struct XmlBuilder {
-    name: String,
-    components: Vec<XmlComponent>,
+    String::from_utf8(sink).expect("writer produced non utf-8")
 }
 
 #[macro_export]
 macro_rules! xml {
-    ($name: expr, $($key: expr, $value: expr),*) => {
-        $crate::xml::XmlBuilder::new($name)
+    ($name:expr, $($aname:expr, $avalue: expr),*) => {
+        xml::writer::XmlEvent::start_element($name)
         $(
-            .with_field($key, $value)
+            .attr($aname, $avalue)
         )*
     };
 }
@@ -44,39 +44,4 @@ macro_rules! xml_args {
             ),*
         )
     };
-}
-
-impl XmlBuilder {
-    pub fn new(name: impl AsRef<str>) -> Self {
-        Self {
-            name: name.as_ref().to_string(),
-            components: vec![],
-        }
-    }
-
-    pub fn with_name(&mut self, name: impl AsRef<str>) -> &mut Self {
-        self.name = name.as_ref().to_string();
-        self
-    }
-
-    pub fn with_field(&mut self, key: impl AsRef<str>, value: impl AsRef<str>) -> &mut Self {
-        self.components.push(XmlComponent::Pair {
-            key: key.as_ref().to_string(),
-            value: value.as_ref().to_string(),
-        });
-        self
-    }
-
-    #[must_use]
-    pub fn build(&self) -> String {
-        format!(
-            "<{} {}>",
-            self.name,
-            self.components
-                .iter()
-                .map(XmlComponent::build)
-                .collect::<Vec<String>>()
-                .join(" ")
-        )
-    }
 }
