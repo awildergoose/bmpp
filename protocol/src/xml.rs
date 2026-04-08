@@ -1,3 +1,9 @@
+#[must_use]
+pub fn sanitize_text(text: &str) -> String {
+    // TODO: definitely missing a lot here
+    text.replace('\'', "\\'")
+}
+
 pub enum XmlComponent {
     Pair { key: String, value: String },
 }
@@ -7,7 +13,7 @@ impl XmlComponent {
     pub fn build(&self) -> String {
         match self {
             Self::Pair { key, value } => {
-                let value = value.replace('\'', "\\'");
+                let value = sanitize_text(value);
                 format!("{key}='{value}'")
             }
         }

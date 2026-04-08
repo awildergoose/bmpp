@@ -17,7 +17,7 @@ mod test {
             from: "Joe".to_owned(),
             to: "Mama".to_owned(),
             version: "1.0".to_owned(),
-        }.build(), "<?xml version='1.0'?><stream:stream from='Joe' to='Mama' version='1.0' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
+        }.build(), "<stream:stream from='Joe' to='Mama' version='1.0' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
     }
 
     #[test]
@@ -26,7 +26,7 @@ mod test {
             from: "\'Joe".to_string(),
             to: "Mama".to_string(),
             version: "1.0".to_string()
-        }.build(), "<?xml version='1.0'?><stream:stream from='\\'Joe' to='Mama' version='1.0' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
+        }.build(), "<stream:stream from='\\'Joe' to='Mama' version='1.0' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>");
     }
 
     #[test]
