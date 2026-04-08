@@ -12,6 +12,17 @@ mod test {
     use crate::stream::StreamCommand;
 
     #[test]
+    pub fn test_xml_version() {
+        assert_eq!(
+            StreamCommand::XmlVersion {
+                version: "1.0".to_owned(),
+            }
+            .build(),
+            "<?xml version='1.0'?>"
+        );
+    }
+
+    #[test]
     pub fn test_xml_open() {
         assert_eq!(StreamCommand::Open {
             from: "Joe".to_owned(),
